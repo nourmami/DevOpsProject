@@ -1,0 +1,32 @@
+stages: 
+  - test-for-vulnerabilities
+  - build
+
+variables:
+  CONTAINER_NAME: adamlahbib/pickloria-server:alpha
+
+test-server-for-vulnerabilities:
+  only:
+    - dev
+  image: node
+  stage: test-for-vulnerabilities
+  before_script:
+    - npm i -g snyk
+    - snyk config set api=$SNYK_TOKEN
+  script: 
+    - cd app/server
+    - snyk test
+
+build-and-push-server:
+  only:
+    - dev
+  image: docker
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo ${ADAMS_DOCKER_PASS} | docker login -u ${ADAMS_DOCKER} --password-stdin 
+  script:
+    - cd app/server
+    - docker build -t ${CONTAINER_NAME} .
+    - docker push ${CONTAINER_NAME}

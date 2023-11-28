@@ -1,0 +1,27 @@
+stages:
+  - triggers
+
+trigger_server:
+  stage: triggers
+  trigger: 
+    include: app/server/.gitlab-ci.yml
+  rules:
+    - changes:
+        - app/server/*
+
+trigger_client:
+  stage: triggers
+  trigger:
+    include: app/client/.gitlab-ci.yml
+  rules:
+    - changes:
+        - app/client/*
+
+
+trigger_worker:
+  stage: triggers
+  trigger:
+    include: app/worker/.gitlab-ci.yml
+  rules:
+    - changes:
+        - app/worker/*

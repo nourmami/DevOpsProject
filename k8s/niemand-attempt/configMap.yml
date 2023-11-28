@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ppp-config-map
+  namespace: ppp
+data:
+  redis-host: redis-service
+  redis-port: "6379"
+  api-host: ppp-api
+  api-port: "8080"
+  db-host: db-svc
+  db-port: "5432"
+  db-name: ppp

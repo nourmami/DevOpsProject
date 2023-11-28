@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pickloria-client
+    spec:
+      containers:
+        - name: pickloria-client
+          image: adamlahbib/pickloria-client:alpha
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http-port
+          env:
+            - name: API_HOST
+              value: "api-svc"
+            - name: API_PORT
+              value: "5050"
+  selector:
+    matchLabels:
+      app: pickloria-client

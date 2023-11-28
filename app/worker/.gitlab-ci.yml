@@ -1,0 +1,19 @@
+stages: 
+  - build
+
+variables:
+  CONTAINER_NAME: adamlahbib/pickloria-worker:alpha
+
+build-and-push-worker:
+  only:
+    - dev
+  image: docker
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo ${ADAMS_DOCKER_PASS} | docker login -u ${ADAMS_DOCKER} --password-stdin 
+  script:
+    - cd app/worker
+    - docker build -t ${CONTAINER_NAME} .
+    - docker push ${CONTAINER_NAME}

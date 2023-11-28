@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+    color-scheme: dark;
+  }
+  
+html {
+    overflow-y: scroll;
+  }
+  body {
+    height: 100%;
+    width: 100%;
+    position: relative;
+
+    -webkit-animation-duration: 20s;
+            animation-duration: 20s;
+    -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+    -webkit-animation-name: animation-colors;
+            animation-name: animation-colors;
+    -webkit-animation-timing-function: linear;
+            animation-timing-function: linear;
+  }
+  
+  @-webkit-keyframes animation-colors {
+    0% {
+      background-color: #031EE2;
+    }
+    25% {
+      background-color: #EF1137;
+    }
+    50% {
+      background-color: #1E0225;
+    }
+    75% {
+      background-color: #201c1c;
+    }
+    100% {
+      background-color: #031EE2;
+    }
+  }
+  
+  @keyframes animation-colors {
+    0% {
+      background-color: #031EE2;
+    }
+    25% {
+      background-color: #EF1137;
+    }
+    50% {
+      background-color: #1E0225;
+    }
+    75% {
+      background-color: #201c1c;
+    }
+    100% {
+      background-color: #031EE2;
+    }
+  }
+
+  .fa {
+      padding-right: 5px;
+  }

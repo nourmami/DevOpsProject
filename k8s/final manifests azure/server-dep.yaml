@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  labels:
+    app: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: adamlahbib/pickloria-server:alpha
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5050
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ppp-secrets
+                  key: aws-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ppp-secrets
+                  key: aws-secret-access-key
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: ppp-secrets
+                  key: aws-region
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: ppp-secrets
+                  key: db-username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ppp-secrets
+                  key: db-password
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: ppp-config-map
+                  key: db-host
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: ppp-config-map
+                  key: db-port
+            - name: DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: ppp-config-map
+                  key: db-name
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: ppp-config-map
+                  key: redis-host
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: ppp-config-map
+                  key: redis-port

@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-headless
+  labels:
+    app: postgres-sts
+spec:
+  ports:
+    - port: 5432
+      name: postgres
+      targetPort: 5432
+  clusterIP: None
+  selector:
+    app: postgres-sts
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-sts
+spec:
+  serviceName: "postgres-headless"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-sts
+  template:
+    metadata:
+      labels:
+        app: postgres-sts
+    spec:
+      initContainers:
+        - name: init
+          image: alpine
+          command: ["sh", "-c", "chown 999:999 /var/lib/postgresql/data"]
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: nfs-postgres
+      containers:
+        - name: postgres
+          image: postgres
+          securityContext:
+            runAsUser: 999
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: nie-secret
+                  key: postgres-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nie-secret
+                  key: postgres-password
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: postgres-host
+            - name: POSTGRES_DBNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: postgres-dbname
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: nfs-postgres
+              #  subPath: pgdata
+              mountPath: /var/lib/postgresql/data/
+      volumes:
+        - name: nfs-postgres
+          persistentVolumeClaim:
+            claimName: azure-managed-disk

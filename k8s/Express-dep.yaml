@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node
+  labels:
+    app: node
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: node
+  template:
+    metadata:
+      labels:
+        app: node
+    spec:
+      containers:
+        - name: node
+          image: niemandx/pbr-server-kiska:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 4000
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: nie-secret
+                  key: postgres-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nie-secret
+                  key: postgres-password
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: postgres-host
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: port
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: postgres-port
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: postgres-dbname
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: nie-secret
+                  key: jwt-secret
+            - name: SALT
+              valueFrom:
+                secretKeyRef:
+                  name: nie-secret
+                  key: salt
+            - name: BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: base-url
+            - name: APP_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: app-url
+            - name: COURIER_API_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: courier-api
+            - name: EMAIL_VERIFIER_ID
+              valueFrom:
+                secretKeyRef:
+                  name: nie-secret
+                  key: email-id
+            - name: EMAIL_VERIFIER_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: nie-secret
+                  key: email-tk
+            - name: FORGOT_PASSWORD_ID
+              valueFrom:
+                secretKeyRef:
+                  name: nie-secret
+                  key: password-fg
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: node-env
+            - name: DB_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: db-type
+            - name: DB_IS_SSL
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: postgres-ssl
+            - name: JUDGE_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: judge-uri
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: redis-host
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: nie-configmap
+                  key: redis-port

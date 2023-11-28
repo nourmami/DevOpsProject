@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  labels:
+    app: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: adamlahbib/pickloria-worker:alpha
+          imagePullPolicy: Always
+          env:
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: ppp-secrets
+                  key: db-username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ppp-secrets
+                  key: db-password
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: ppp-config-map
+                  key: db-host
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: ppp-config-map
+                  key: db-port
+            - name: DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: ppp-config-map
+                  key: db-name
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: ppp-config-map
+                  key: redis-host
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: ppp-config-map
+                  key: redis-port
+            - name: REDIS
+              value: "$(REDIS_HOST):$(REDIS_PORT)"

@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pickloria-client
+    spec:
+      containers:
+        - name: pickloria-client
+          image: adamlahbib/pickloria-client:alpha
+          ports:
+            - containerPort: 80 #4173 else 80 when nginx conf takes place in client.
+              name: http-port
+  selector:
+    matchLabels:
+      app: pickloria-client

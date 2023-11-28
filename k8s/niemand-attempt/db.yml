@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-stateful-set
+  namespace: ppp
+spec:
+  serviceName: db-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-stateful-set
+  template:
+    metadata:
+      labels:
+        app: db-stateful-set
+    spec:
+      # initContainers:
+      #   - name: init
+      #     image: alpine
+      #     command: ["sh", "-c", "chown 999:999 /var/lib/postgresql/data"]
+      #     volumeMounts:
+      #       - mountPath: /var/lib/postgresql/data
+      #         name: nfs-postgres
+      containers:
+        - name: postgres
+          image: postgres
+          securityContext:
+            runAsUser: 999
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ppp-secrets
+                  key: db-username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ppp-secrets
+                  key: db-password
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: ppp-config-map
+                  key: db-host
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: ppp-config-map
+                  key: db-name
+            # - name: PGDATA
+            #   value: /var/lib/postgresql/data/pgdata
+          # volumeMounts:
+          #   - name: nfs-postgres
+          #     #  subPath: pgdata
+          #     mountPath: /var/lib/postgresql/data/
+      # volumes:
+      #   - name: nfs-postgres
+      #     persistentVolumeClaim:
+      #       claimName: azure-managed-disk
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+  namespace: ppp
+  labels:
+    app: db-stateful-set
+spec:
+  ports:
+    - port: 5432
+      name: postgres
+      targetPort: 5432
+  clusterIP: None
+  selector:
+    app: db-stateful-set
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ppp
+  name: db-svc
+spec:
+  selector:
+    app: db-stateful-set
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

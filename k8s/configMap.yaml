@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nie-configmap
+data:
+  postgres-host: postgres-svc
+  postgres-dbname: postgres
+  postgres-port: "5432"
+  port: "4000"
+  postgres-ssl: "false"
+  judge-uri: "3.22.201.146"
+  node-env: production
+  courier-api: https://api.courier.com/send
+  app-url: https://tpbr.vercel.app/
+  base-url: "52.254.56.46"
+  db-type: postgres
+  redis-host: redis-service
+  redis-port: "6379"

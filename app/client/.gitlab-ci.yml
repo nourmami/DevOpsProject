@@ -1,0 +1,51 @@
+stages: 
+  - test-for-vulnerabilities
+  - build
+
+variables:
+  CONTAINER_NAME: adamlahbib/pickloria-client:alpha
+
+
+test-front-for-vulnerabilities:
+  only:
+    - dev
+  image: node
+  stage: test-for-vulnerabilities
+  before_script:
+    - npm i -g snyk
+    - snyk config set api=$SNYK_TOKEN
+  script: 
+    - cd app/client
+    - snyk test
+
+build-and-push-front:
+  only:
+    - dev
+  image: docker
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo ${ADAMS_DOCKER_PASS} | docker login -u ${ADAMS_DOCKER} --password-stdin 
+  script:
+    - cd app/client
+    - docker build -t ${CONTAINER_NAME} .
+    - docker push ${CONTAINER_NAME}
+
+# kube_deploy:
+#   image: lwolf/kubectl_deployer:latest
+
+#   stage: deploy
+
+#   only:
+#     - dev
+
+#   script:
+#     - kubectl config set-cluster ${AKS_CLUSTER_NAME} --server="${AKS_KUBE_URL}" --certificate-authority="${AKS_KUBE_CA_PEM}"
+#     - kubectl config set-credentials admin --username="${AKS_KUBE_USERNAME}" --password="${AKS_KUBE_PASSWORD}"
+#     - kubectl config set-context default --cluster=${AKS_CLUSTER_NAME} --user=${AKS_KUBE_USERNAME}
+#     - kubectl config use-context default
+#     - cd ../K8s
+#     - kubectl create -f client-service.yml
+#     - kubectl create -f client-deployment.yml
+#     - kubectl set image deployment/pickloria-client-deployment pickloria-client=${CONTAINER_NAME}
